@@ -10,29 +10,33 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, l
     tiles.setTileAt(location, assets.tile`transparency16`)
 })
 function duckL4 () {
-    duck4 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . 
-        b b d b 5 5 5 d f b 4 4 4 4 b . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
-        c d d d c c b 5 5 5 5 5 5 5 b . 
-        c b d d d d d 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
+    mySprite.setFlag(SpriteFlag.AutoDestroy, true)
+    mySprite = sprites.create(img`
+        ..................
+        .........b55b.....
+        ......bbbbbb......
+        .....bb55555b.....
+        .bbbbb5555555b....
+        .bd5b55555555b....
+        ..b55b5d1f5d4f....
+        ..bd55b1ff544c....
+        bbdb555dfb4444b...
+        bddcd55b5444444b..
+        cdddccb5555555b...
+        .cddddd45555fff9..
+        ..cbddd4444fbb....
+        ...ccccccccbb.....
+        ....f...f.........
+        ....f...f.........
+        ....f...f.........
+        ....ff..ff........
         `, SpriteKind.Player)
-    duck4.ay = -40
-    controller.moveSprite(duck4, 100, 100)
-    duck4.setStayInScreen(true)
+    mySprite.ay = -40
+    controller.moveSprite(mySprite, 100, 100)
+    mySprite.setStayInScreen(true)
+    // need to animate
     animation.runImageAnimation(
-    duck4,
+    mySprite,
     [img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -144,13 +148,15 @@ statusbars.onZero(StatusBarKind.sharkHP, function (status) {
     info.setLife(3)
     sharkHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(15)
+    shrk = false
+    dno = true
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile19`, function (sprite, location) {
     game.over(true)
 })
 function levelSetup () {
     scene.cameraFollowSprite(mySprite)
-    info.startCountdown(40)
+    info.startCountdown(45)
     generateCoins()
     mySprite.ay = 300
 }
@@ -160,13 +166,16 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile6`, function (sprite, l
 })
 function attemptJump () {
     if (mySprite.isHittingTile(CollisionDirection.Bottom)) {
-        mySprite.vy = -40
+        mySprite.vy = -200
     } else if (canDoubleJump) {
         doubleJmpSpd = -30
         mySprite.vy = doubleJmpSpd
         canDoubleJump = false
     }
 }
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    blaster()
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     info.stopCountdown()
     startL2()
@@ -673,33 +682,36 @@ function makeLevels () {
 function startL3 () {
     level += 1
     pause(100)
+    duckSwitch()
     levelSwitch()
     info.setLife(2)
 }
 function duckL3 () {
-    duck3 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . 
-        b b d b 5 5 5 d f b 4 4 4 4 b . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
-        c d d d c c b 5 5 5 5 5 5 5 b . 
-        c b d d d d d 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
+    mySprite.setFlag(SpriteFlag.AutoDestroy, true)
+    mySprite = sprites.create(img`
+        . . . . . . . . . b 5 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . . . 
+        b b d b 5 5 5 d f b 4 4 4 4 4 b . . 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 4 b . 
+        c d d d c c b 5 5 5 5 5 5 5 b . . . 
+        c b d d d d d 5 5 5 5 5 5 5 b . . . 
+        . c d d d d d d 5 5 5 5 5 d b . . . 
+        . . c b d d d d d 5 5 5 b b . . . . 
+        . . . c c c c c c c c b b . . . . . 
+        . . . . . f . . . f . . . . . . . . 
+        . . . . . f f . . f f . . . . . . . 
         `, SpriteKind.Player)
-    duck3.ay = -40
-    controller.moveSprite(duck3, 100, 100)
-    duck3.setStayInScreen(true)
+    mySprite.ay = -40
+    controller.moveSprite(mySprite, 100, 100)
+    mySprite.setStayInScreen(true)
+    // need to animate
     animation.runImageAnimation(
-    duck3,
+    mySprite,
     [img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -819,6 +831,8 @@ statusbars.onZero(StatusBarKind.ghostHP, function (status) {
     info.setLife(3)
     ghostHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(10)
+    ghst = false
+    shrk = true
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.chestClosed, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
@@ -830,6 +844,39 @@ function generateCoins () {
         tiles.placeOnTile(coiin, value)
     }
 }
+statusbars.onZero(StatusBarKind.Health, function (status) {
+    game.over(false)
+})
+function blaster () {
+    myHP = statusbars.create(20, 4, StatusBarKind.Health)
+    myHP.attachToSprite(mySprite)
+    myHP.setColor(7, 1)
+    if (level == 4) {
+        let duck4: Sprite = null
+        projectile = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . 8 8 9 9 9 9 8 . 
+            . 8 8 8 9 9 9 9 9 1 1 1 1 1 9 8 
+            . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 8 
+            . 8 8 8 9 9 9 9 9 1 1 1 1 1 9 8 
+            . . . . . . . . 8 8 8 9 9 9 8 . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, mySprite, 50, 50)
+        projectile.setPosition(duck4.x + 1, mySprite.y)
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
+    myHP.value += -4
+})
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sprite, location) {
     if (snowflake) {
         info.changeLifeBy(0)
@@ -837,280 +884,7 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sp
         info.changeLifeBy(-1)
     }
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.coin, function (sprite, otherSprite) {
-    otherSprite.destroy(effects.ashes, 500)
-    info.changeScoreBy(2)
-    pause(1000)
-})
-function startL2 () {
-    level += 1
-    pause(100)
-    levelSwitch()
-    shield = false
-}
-function duckL2 () {
-    duck2 = sprites.create(img`
-        . . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . . . 
-        . . . . . . b b b b b b . . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . . . 
-        b b d b 5 5 5 d f b 4 4 4 4 4 b . . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 4 b . 
-        c d d d c c b 5 5 5 5 5 5 5 b . . . 
-        c b d d d d d 5 5 5 5 5 5 5 b . . . 
-        . c d d d d d d 5 5 5 5 5 d b . . . 
-        . . c b d d d d d 5 5 5 b b . . . . 
-        . . . c c c c c c c c b b . . . . . 
-        `, SpriteKind.Player)
-    duck2.ay = -40
-    controller.moveSprite(duck2, 100, 100)
-    duck2.setStayInScreen(true)
-    animation.runImageAnimation(
-    duck2,
-    [img`
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . . 
-        b b d b 5 5 5 d f b 4 4 4 4 4 b . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 4 b 
-        c d d d c c b 5 5 5 5 5 5 5 b . . 
-        c b d d d d d 5 5 5 5 5 5 5 b . . 
-        . c d d d d d d 5 5 5 5 5 d b . . 
-        . . c b d d d d d 5 5 5 b b . . . 
-        . . . c c c c c c c c b b . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b 5 b . . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . . 
-        b b d b 5 5 5 d f b 4 4 4 4 4 4 b 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 b . 
-        c d d d c c b 5 5 5 5 5 5 5 b . . 
-        c b d d d d d 5 5 5 5 5 5 5 b . . 
-        . c d d d d d d 5 5 5 5 5 d b . . 
-        . . c b d d d d d 5 5 5 b b . . . 
-        . . . c c c c c c c c b b . . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b 5 b . . . . . 
-        . . . . . . . . . b c . . . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . . . . b b 5 d 1 f 5 5 d f . . . 
-        . . . . b 5 5 1 f f 5 d 4 c . . . 
-        . . . . b 5 5 d f b d d 4 4 . . . 
-        b d d d b b d 5 5 5 4 4 4 4 4 4 b 
-        b b d 5 5 5 b 5 5 4 4 4 4 4 4 b . 
-        b d c 5 5 5 5 d 5 5 5 5 5 b . . . 
-        c d d c d 5 5 b 5 5 5 5 5 5 b . . 
-        c b d d c c b 5 5 5 5 5 5 5 b . . 
-        . c d d d d d d 5 5 5 5 5 d b . . 
-        . . c b d d d d d 5 5 5 b b . . . 
-        . . . c c c c c c c c b b . . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b 5 b . . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . . . . b b 5 d 1 f 5 d 4 c . . . 
-        . . . . b 5 5 1 f f d d 4 4 4 4 b 
-        . . . . b 5 5 d f b 4 4 4 4 4 b . 
-        . . . b d 5 5 5 5 4 4 4 4 4 b . . 
-        . . b d d 5 5 5 5 5 5 5 5 b . . . 
-        . b d d d d 5 5 5 5 5 5 5 5 b . . 
-        b d d d b b b 5 5 5 5 5 5 5 b . . 
-        c d d b 5 5 d c 5 5 5 5 5 5 b . . 
-        c b b d 5 d c d 5 5 5 5 5 5 b . . 
-        . b 5 5 b c d d 5 5 5 5 5 d b . . 
-        b b c c c d d d d 5 5 5 b b . . . 
-        . . . c c c c c c c c b b . . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b 5 b . . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . . . . b b 5 d 1 f 5 d 4 c . . . 
-        . . . . b 5 5 1 f f d d 4 4 4 4 b 
-        . . . . b 5 5 d f b 4 4 4 4 4 b . 
-        . . . b d 5 5 5 5 4 4 4 4 4 b . . 
-        . b b d d d 5 5 5 5 5 5 5 b . . . 
-        b d d d b b b 5 5 5 5 5 5 5 b . . 
-        c d d b 5 5 d c 5 5 5 5 5 5 b . . 
-        c b b d 5 d c d 5 5 5 5 5 5 b . . 
-        c b 5 5 b c d d 5 5 5 5 5 5 b . . 
-        b b c c c d d d 5 5 5 5 5 d b . . 
-        . . . . c c d d d 5 5 5 b b . . . 
-        . . . . . . c c c c c b b . . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b 5 b . . . . . 
-        . . . . . . b b b b b b . . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . . 
-        . . . . b b 5 d 1 f 5 5 d f . . . 
-        . . . . b 5 5 1 f f 5 d 4 c . . . 
-        . . . . b 5 5 d f b d d 4 4 . . . 
-        . b b b d 5 5 5 5 5 4 4 4 4 4 4 b 
-        b d d d b b d 5 5 4 4 4 4 4 4 b . 
-        b b d 5 5 5 b 5 5 5 5 5 5 b . . . 
-        c d c 5 5 5 5 d 5 5 5 5 5 5 b . . 
-        c b d c d 5 5 b 5 5 5 5 5 5 b . . 
-        . c d d c c b d 5 5 5 5 5 d b . . 
-        . . c b d d d d d 5 5 5 b b . . . 
-        . . . c c c c c c c c b b . . . . 
-        . . . . . . . . . . . . . . . . . 
-        `],
-    500,
-    true
-    )
-}
-function duckInitialization () {
-    mySprite = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . 
-        b b d b 5 5 5 d f b 4 4 4 4 b . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
-        c d d d c c b 5 5 5 5 5 5 5 b . 
-        c b d d d d d 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        `, SpriteKind.Player)
-    mySprite.ay = -40
-    controller.moveSprite(mySprite, 100, 100)
-    mySprite.setStayInScreen(true)
-    animation.runImageAnimation(
-    mySprite,
-    [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . b 5 5 b . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . 
-        b b d b 5 5 5 d f b 4 4 4 4 b . 
-        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
-        c d d d c c b 5 5 5 5 5 5 5 b . 
-        c b d d d d d 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . b 5 b . . . 
-        . . . . . . . . . b 5 b . . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . b b b b b 5 5 5 5 5 5 5 b . . 
-        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
-        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
-        . . b d 5 5 b 1 f f 5 4 4 c . . 
-        b b d b 5 5 5 d f b 4 4 4 4 4 b 
-        b d d c d 5 5 b 5 4 4 4 4 4 b . 
-        c d d d c c b 5 5 5 5 5 5 5 b . 
-        c b d d d d d 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . 
-        . . . . . . . . . b 5 b . . . . 
-        . . . . . . . . . b c . . . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . . . . b b 5 d 1 f 5 5 d f . . 
-        . . . . b 5 5 1 f f 5 d 4 c . . 
-        . . . . b 5 5 d f b d d 4 4 . . 
-        b d d d b b d 5 5 5 4 4 4 4 4 b 
-        b b d 5 5 5 b 5 5 4 4 4 4 4 b . 
-        b d c 5 5 5 5 d 5 5 5 5 5 b . . 
-        c d d c d 5 5 b 5 5 5 5 5 5 b . 
-        c b d d c c b 5 5 5 5 5 5 5 b . 
-        . c d d d d d d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . 
-        . . . . . . . . . b 5 b . . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . . . . b b 5 d 1 f 5 d 4 c . . 
-        . . . . b 5 5 1 f f d d 4 4 4 b 
-        . . . . b 5 5 d f b 4 4 4 4 b . 
-        . . . b d 5 5 5 5 4 4 4 4 b . . 
-        . . b d d 5 5 5 5 5 5 5 5 b . . 
-        . b d d d d 5 5 5 5 5 5 5 5 b . 
-        b d d d b b b 5 5 5 5 5 5 5 b . 
-        c d d b 5 5 d c 5 5 5 5 5 5 b . 
-        c b b d 5 d c d 5 5 5 5 5 5 b . 
-        . b 5 5 b c d d 5 5 5 5 5 d b . 
-        b b c c c d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . 
-        . . . . . . . . . b 5 b . . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . . . . b b 5 d 1 f 5 d 4 c . . 
-        . . . . b 5 5 1 f f d d 4 4 4 b 
-        . . . . b 5 5 d f b 4 4 4 4 b . 
-        . . . b d 5 5 5 5 4 4 4 4 b . . 
-        . b b d d d 5 5 5 5 5 5 5 b . . 
-        b d d d b b b 5 5 5 5 5 5 5 b . 
-        c d d b 5 5 d c 5 5 5 5 5 5 b . 
-        c b b d 5 d c d 5 5 5 5 5 5 b . 
-        c b 5 5 b c d d 5 5 5 5 5 5 b . 
-        b b c c c d d d 5 5 5 5 5 d b . 
-        . . . . c c d d d 5 5 5 b b . . 
-        . . . . . . c c c c c b b . . . 
-        `,img`
-        . . . . . . . . . . b 5 b . . . 
-        . . . . . . . . . b 5 b . . . . 
-        . . . . . . b b b b b b . . . . 
-        . . . . . b b 5 5 5 5 5 b . . . 
-        . . . . b b 5 d 1 f 5 5 d f . . 
-        . . . . b 5 5 1 f f 5 d 4 c . . 
-        . . . . b 5 5 d f b d d 4 4 . . 
-        . b b b d 5 5 5 5 5 4 4 4 4 4 b 
-        b d d d b b d 5 5 4 4 4 4 4 b . 
-        b b d 5 5 5 b 5 5 5 5 5 5 b . . 
-        c d c 5 5 5 5 d 5 5 5 5 5 5 b . 
-        c b d c d 5 5 b 5 5 5 5 5 5 b . 
-        . c d d c c b d 5 5 5 5 5 d b . 
-        . . c b d d d d d 5 5 5 b b . . 
-        . . . c c c c c c c c b b . . . 
-        . . . . . . . . . . . . . . . . 
-        `],
-    500,
-    true
-    )
-}
-function createBosses () {
+function ghostActivate () {
     ghost = sprites.create(img`
         ........................
         ........................
@@ -1247,6 +1021,428 @@ function createBosses () {
     ghostHealth = statusbars.create(20, 4, StatusBarKind.ghostHP)
     ghostHealth.attachToSprite(ghost)
     ghostHealth.value = 5
+    bullet = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 4 4 . . . . . . . 
+        . . . . . . 4 5 5 4 . . . . . . 
+        . . . . . . 2 5 5 2 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, ghost, -50, 0)
+    animation.runImageAnimation(
+    bullet,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 4 4 . . . . . . . 
+        . . . . . . 4 5 5 4 . . . . . . 
+        . . . . . . 2 5 5 2 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 4 . . . . . 
+        . . . . 2 . . . . 4 4 . . . . . 
+        . . . . 2 4 . . 4 5 4 . . . . . 
+        . . . . . 2 4 d 5 5 4 . . . . . 
+        . . . . . 2 5 5 5 5 4 . . . . . 
+        . . . . . . 2 5 5 5 5 4 . . . . 
+        . . . . . . 2 5 4 2 4 4 . . . . 
+        . . . . . . 4 4 . . 2 4 4 . . . 
+        . . . . . 4 4 . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . 3 . . . . . . . . . . . 4 . . 
+        . 3 3 . . . . . . . . . 4 4 . . 
+        . 3 d 3 . . 4 4 . . 4 4 d 4 . . 
+        . . 3 5 3 4 5 5 4 4 d d 4 4 . . 
+        . . 3 d 5 d 1 1 d 5 5 d 4 4 . . 
+        . . 4 5 5 1 1 1 1 5 1 1 5 4 . . 
+        . 4 5 5 5 5 1 1 5 1 1 1 d 4 4 . 
+        . 4 d 5 1 1 5 5 5 1 1 1 5 5 4 . 
+        . 4 4 5 1 1 5 5 5 5 5 d 5 5 4 . 
+        . . 4 3 d 5 5 5 d 5 5 d d d 4 . 
+        . 4 5 5 d 5 5 5 d d d 5 5 4 . . 
+        . 4 5 5 d 3 5 d d 3 d 5 5 4 . . 
+        . 4 4 d d 4 d d d 4 3 d d 4 . . 
+        . . 4 5 4 4 4 4 4 4 4 4 4 . . . 
+        . 4 5 4 . . 4 4 4 . . . 4 4 . . 
+        . 4 4 . . . . . . . . . . 4 4 . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . b b . b b b . . . . . 
+        . . . . b 1 1 b 1 1 1 b . . . . 
+        . . b b 3 1 1 d d 1 d d b b . . 
+        . b 1 1 d d b b b b b 1 1 b . . 
+        . b 1 1 1 b . . . . . b d d b . 
+        . . 3 d d b . . . . . b d 1 1 b 
+        . b 1 d 3 . . . . . . . b 1 1 b 
+        . b 1 1 b . . . . . . b b 1 d b 
+        . b 1 d b . . . . . . b d 3 d b 
+        . b b d d b . . . . b d d d b . 
+        . b d d d d b . b b 3 d d 3 b . 
+        . . b d d 3 3 b d 3 3 b b b . . 
+        . . . b b b d d d d d b . . . . 
+        . . . . . . b b b b b . . . . . 
+        `],
+    500,
+    false
+    )
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.coin, function (sprite, otherSprite) {
+    otherSprite.destroy(effects.ashes, 500)
+    info.changeScoreBy(2)
+    pause(1000)
+})
+function startL2 () {
+    level += 1
+    pause(100)
+    duckSwitch()
+    levelSwitch()
+    shield = false
+}
+function duckL2 () {
+    mySprite.setFlag(SpriteFlag.AutoDestroy, true)
+    mySprite = sprites.create(img`
+        . . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . b 5 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . . . 
+        b b d b 5 5 5 d f b 4 4 4 4 4 b . . 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 4 b . 
+        c d d d c c b 5 5 5 5 5 5 5 b . . . 
+        c b d d d d d 5 5 5 5 5 5 5 b . . . 
+        . c d d d d d d 5 5 5 5 5 d b . . . 
+        . . c b d d d d d 5 5 5 b b . . . . 
+        . . . c c c c c c c c b b . . . . . 
+        `, SpriteKind.Player)
+    mySprite.ay = -40
+    controller.moveSprite(mySprite, 100, 100)
+    mySprite.setStayInScreen(true)
+    // need to animate
+    animation.runImageAnimation(
+    mySprite,
+    [img`
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . b 5 5 b . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . . 
+        b b d b 5 5 5 d f b 4 4 4 4 4 b . 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 4 b 
+        c d d d c c b 5 5 5 5 5 5 5 b . . 
+        c b d d d d d 5 5 5 5 5 5 5 b . . 
+        . c d d d d d d 5 5 5 5 5 d b . . 
+        . . c b d d d d d 5 5 5 b b . . . 
+        . . . c c c c c c c c b b . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . . 
+        b b d b 5 5 5 d f b 4 4 4 4 4 4 b 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 b . 
+        c d d d c c b 5 5 5 5 5 5 5 b . . 
+        c b d d d d d 5 5 5 5 5 5 5 b . . 
+        . c d d d d d d 5 5 5 5 5 d b . . 
+        . . c b d d d d d 5 5 5 b b . . . 
+        . . . c c c c c c c c b b . . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b 5 b . . . . . 
+        . . . . . . . . . b c . . . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . . . . b b 5 d 1 f 5 5 d f . . . 
+        . . . . b 5 5 1 f f 5 d 4 c . . . 
+        . . . . b 5 5 d f b d d 4 4 . . . 
+        b d d d b b d 5 5 5 4 4 4 4 4 4 b 
+        b b d 5 5 5 b 5 5 4 4 4 4 4 4 b . 
+        b d c 5 5 5 5 d 5 5 5 5 5 b . . . 
+        c d d c d 5 5 b 5 5 5 5 5 5 b . . 
+        c b d d c c b 5 5 5 5 5 5 5 b . . 
+        . c d d d d d d 5 5 5 5 5 d b . . 
+        . . c b d d d d d 5 5 5 b b . . . 
+        . . . c c c c c c c c b b . . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . . . . b b 5 d 1 f 5 d 4 c . . . 
+        . . . . b 5 5 1 f f d d 4 4 4 4 b 
+        . . . . b 5 5 d f b 4 4 4 4 4 b . 
+        . . . b d 5 5 5 5 4 4 4 4 4 b . . 
+        . . b d d 5 5 5 5 5 5 5 5 b . . . 
+        . b d d d d 5 5 5 5 5 5 5 5 b . . 
+        b d d d b b b 5 5 5 5 5 5 5 b . . 
+        c d d b 5 5 d c 5 5 5 5 5 5 b . . 
+        c b b d 5 d c d 5 5 5 5 5 5 b . . 
+        . b 5 5 b c d d 5 5 5 5 5 d b . . 
+        b b c c c d d d d 5 5 5 b b . . . 
+        . . . c c c c c c c c b b . . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . . . . b b 5 d 1 f 5 d 4 c . . . 
+        . . . . b 5 5 1 f f d d 4 4 4 4 b 
+        . . . . b 5 5 d f b 4 4 4 4 4 b . 
+        . . . b d 5 5 5 5 4 4 4 4 4 b . . 
+        . b b d d d 5 5 5 5 5 5 5 b . . . 
+        b d d d b b b 5 5 5 5 5 5 5 b . . 
+        c d d b 5 5 d c 5 5 5 5 5 5 b . . 
+        c b b d 5 d c d 5 5 5 5 5 5 b . . 
+        c b 5 5 b c d d 5 5 5 5 5 5 b . . 
+        b b c c c d d d 5 5 5 5 5 d b . . 
+        . . . . c c d d d 5 5 5 b b . . . 
+        . . . . . . c c c c c b b . . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b 5 b . . . . . 
+        . . . . . . b b b b b b . . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . . 
+        . . . . b b 5 d 1 f 5 5 d f . . . 
+        . . . . b 5 5 1 f f 5 d 4 c . . . 
+        . . . . b 5 5 d f b d d 4 4 . . . 
+        . b b b d 5 5 5 5 5 4 4 4 4 4 4 b 
+        b d d d b b d 5 5 4 4 4 4 4 4 b . 
+        b b d 5 5 5 b 5 5 5 5 5 5 b . . . 
+        c d c 5 5 5 5 d 5 5 5 5 5 5 b . . 
+        c b d c d 5 5 b 5 5 5 5 5 5 b . . 
+        . c d d c c b d 5 5 5 5 5 d b . . 
+        . . c b d d d d d 5 5 5 b b . . . 
+        . . . c c c c c c c c b b . . . . 
+        . . . . . . . . . . . . . . . . . 
+        `],
+    500,
+    true
+    )
+}
+function duckInitialization () {
+    mySprite.destroy()
+    mySprite = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . b 5 5 b . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . 
+        b b d b 5 5 5 d f b 4 4 4 4 b . 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
+        c d d d c c b 5 5 5 5 5 5 5 b . 
+        c b d d d d d 5 5 5 5 5 5 5 b . 
+        . c d d d d d d 5 5 5 5 5 d b . 
+        . . c b d d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        `, SpriteKind.Player)
+    mySprite.ay = 140
+    controller.moveSprite(mySprite, 50, 0)
+    mySprite.setStayInScreen(true)
+    animation.runImageAnimation(
+    mySprite,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . b 5 5 b . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . 
+        b b d b 5 5 5 d f b 4 4 4 4 b . 
+        b d d c d 5 5 b 5 4 4 4 4 4 4 b 
+        c d d d c c b 5 5 5 5 5 5 5 b . 
+        c b d d d d d 5 5 5 5 5 5 5 b . 
+        . c d d d d d d 5 5 5 5 5 d b . 
+        . . c b d d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . b 5 b . . . 
+        . . . . . . . . . b 5 b . . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . b b b b b 5 5 5 5 5 5 5 b . . 
+        . b d 5 b 5 5 5 5 5 5 5 5 b . . 
+        . . b 5 5 b 5 d 1 f 5 d 4 f . . 
+        . . b d 5 5 b 1 f f 5 4 4 c . . 
+        b b d b 5 5 5 d f b 4 4 4 4 4 b 
+        b d d c d 5 5 b 5 4 4 4 4 4 b . 
+        c d d d c c b 5 5 5 5 5 5 5 b . 
+        c b d d d d d 5 5 5 5 5 5 5 b . 
+        . c d d d d d d 5 5 5 5 5 d b . 
+        . . c b d d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . 
+        . . . . . . . . . b 5 b . . . . 
+        . . . . . . . . . b c . . . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . . . . b b 5 d 1 f 5 5 d f . . 
+        . . . . b 5 5 1 f f 5 d 4 c . . 
+        . . . . b 5 5 d f b d d 4 4 . . 
+        b d d d b b d 5 5 5 4 4 4 4 4 b 
+        b b d 5 5 5 b 5 5 4 4 4 4 4 b . 
+        b d c 5 5 5 5 d 5 5 5 5 5 b . . 
+        c d d c d 5 5 b 5 5 5 5 5 5 b . 
+        c b d d c c b 5 5 5 5 5 5 5 b . 
+        . c d d d d d d 5 5 5 5 5 d b . 
+        . . c b d d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . 
+        . . . . . . . . . b 5 b . . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . . . . b b 5 d 1 f 5 d 4 c . . 
+        . . . . b 5 5 1 f f d d 4 4 4 b 
+        . . . . b 5 5 d f b 4 4 4 4 b . 
+        . . . b d 5 5 5 5 4 4 4 4 b . . 
+        . . b d d 5 5 5 5 5 5 5 5 b . . 
+        . b d d d d 5 5 5 5 5 5 5 5 b . 
+        b d d d b b b 5 5 5 5 5 5 5 b . 
+        c d d b 5 5 d c 5 5 5 5 5 5 b . 
+        c b b d 5 d c d 5 5 5 5 5 5 b . 
+        . b 5 5 b c d d 5 5 5 5 5 d b . 
+        b b c c c d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . 
+        . . . . . . . . . b 5 b . . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . . . . b b 5 d 1 f 5 d 4 c . . 
+        . . . . b 5 5 1 f f d d 4 4 4 b 
+        . . . . b 5 5 d f b 4 4 4 4 b . 
+        . . . b d 5 5 5 5 4 4 4 4 b . . 
+        . b b d d d 5 5 5 5 5 5 5 b . . 
+        b d d d b b b 5 5 5 5 5 5 5 b . 
+        c d d b 5 5 d c 5 5 5 5 5 5 b . 
+        c b b d 5 d c d 5 5 5 5 5 5 b . 
+        c b 5 5 b c d d 5 5 5 5 5 5 b . 
+        b b c c c d d d 5 5 5 5 5 d b . 
+        . . . . c c d d d 5 5 5 b b . . 
+        . . . . . . c c c c c b b . . . 
+        `,img`
+        . . . . . . . . . . b 5 b . . . 
+        . . . . . . . . . b 5 b . . . . 
+        . . . . . . b b b b b b . . . . 
+        . . . . . b b 5 5 5 5 5 b . . . 
+        . . . . b b 5 d 1 f 5 5 d f . . 
+        . . . . b 5 5 1 f f 5 d 4 c . . 
+        . . . . b 5 5 d f b d d 4 4 . . 
+        . b b b d 5 5 5 5 5 4 4 4 4 4 b 
+        b d d d b b d 5 5 4 4 4 4 4 b . 
+        b b d 5 5 5 b 5 5 5 5 5 5 b . . 
+        c d c 5 5 5 5 d 5 5 5 5 5 5 b . 
+        c b d c d 5 5 b 5 5 5 5 5 5 b . 
+        . c d d c c b d 5 5 5 5 5 d b . 
+        . . c b d d d d d 5 5 5 b b . . 
+        . . . c c c c c c c c b b . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    500,
+    true
+    )
+}
+function createBosses () {
+    ghst = true
+    if (ghst) {
+        ghostActivate()
+    } else if (shrk) {
+        sharkActivate()
+    } else {
+        dinoActivate()
+    }
+}
+function startL4 () {
+    level += 1
+    pause(100)
+    duckSwitch()
+    levelSwitch()
+    createBosses()
+}
+info.onLifeZero(function () {
+    game.over(false)
+})
+function setScene () {
+    tiles.loadMap(tilemaps[level - 1])
+    scene.setBackgroundImage(backgrounds[level - 1])
+}
+function levelSwitch () {
+    if (level == 1) {
+        setScene()
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
+    } else if (level == 2) {
+        setScene()
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 12))
+    } else if (level == 3) {
+        setScene()
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
+    } else {
+        setScene()
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 10))
+    }
+    levelSetup()
+}
+function duckSwitch () {
+    if (level == 1) {
+        duckInitialization()
+    } else if (level == 2) {
+        duckL2()
+    } else if (level == 3) {
+        duckL3()
+    } else {
+        duckL4()
+    }
+}
+function sharkActivate () {
     shark = sprites.create(img`
         .............ccfff..............
         ...........ccdd2cf..............
@@ -1343,6 +1539,83 @@ function createBosses () {
     sharkHealth = statusbars.create(20, 4, StatusBarKind.sharkHP)
     sharkHealth.attachToSprite(shark)
     sharkHealth.value = 10
+    bolt = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, shark, -50, 0)
+    animation.runImageAnimation(
+    bolt,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . 3 3 . . . . . . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . 3 3 . . 3 1 3 . . 3 3 . . . 
+        . . 3 1 3 . 3 1 3 2 3 1 3 . . . 
+        . . . 3 1 3 3 1 3 2 1 3 . . . . 
+        3 3 3 3 2 1 3 1 1 1 3 . . . . . 
+        3 1 1 1 1 1 1 1 1 2 3 3 3 3 3 3 
+        . 3 3 3 2 3 1 1 1 1 1 1 1 1 1 3 
+        . . . . . 2 1 1 1 3 3 2 3 3 3 . 
+        . . . . 3 1 3 1 3 1 2 . . . . . 
+        . . . 3 1 3 2 1 3 3 1 3 . . . . 
+        . . 3 1 3 . 2 1 3 . 3 1 3 . . . 
+        . . 3 3 . . 3 1 3 . . 3 3 . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . . . . . 3 3 . . . . . . . . 
+        `,img`
+        . . 3 3 . . . 3 3 . . . . . . . 
+        . 3 1 1 2 . . 3 1 3 . . 3 3 3 . 
+        . 3 1 1 2 . . 3 1 3 . 3 1 1 3 . 
+        . . 3 2 2 . . 2 1 2 . 2 1 1 3 . 
+        . 3 3 . . . . . 2 2 . 2 2 2 . . 
+        3 1 1 2 2 . . . . . . . 3 3 . . 
+        3 1 1 1 2 . . . . . . 2 1 1 3 3 
+        3 1 1 2 . . . . . . 3 1 1 1 1 3 
+        . 3 2 2 . . . . . . . 2 1 1 3 . 
+        . . . . . . . 2 . . . . 3 3 . . 
+        . . 2 2 2 . 2 1 2 . . 2 2 2 . . 
+        . 3 1 1 2 2 3 1 1 2 . 2 1 1 3 3 
+        3 1 1 1 2 2 1 1 1 2 . 2 1 1 1 3 
+        3 1 1 3 . . 3 1 3 . . . 3 1 1 3 
+        3 3 3 . . . . 3 3 . . . . 3 3 . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    500,
+    false
+    )
+}
+function dinoActivate () {
     dino = sprites.create(img`
         ........................
         ..........cc............
@@ -1529,46 +1802,98 @@ function createBosses () {
     dinoHealth = statusbars.create(20, 4, StatusBarKind.dinoHP)
     dinoHealth.attachToSprite(dino)
     dinoHealth.value = 20
-}
-function startL4 () {
-    level += 1
-    pause(100)
-    levelSwitch()
-    createBosses()
-}
-info.onLifeZero(function () {
-    game.over(false)
-})
-function setScene () {
-    tiles.loadMap(tilemaps[level - 1])
-    scene.setBackgroundImage(backgrounds[level - 1])
-}
-function levelSwitch () {
-    if (level == 1) {
-        setScene()
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
-    } else if (level == 2) {
-        setScene()
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 12))
-    } else if (level == 3) {
-        setScene()
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
-    } else {
-        setScene()
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 10))
-    }
-    levelSetup()
-}
-function duckSwitch () {
-    if (level == 1) {
-        duckInitialization()
-    } else if (level == 2) {
-        duckL2()
-    } else if (level == 3) {
-        duckL3()
-    } else {
-        duckL4()
-    }
+    blast = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . 2 2 2 2 . . . . . . . . . 
+        . . 2 1 1 1 1 2 2 . . . . . . . 
+        . 3 1 1 1 1 1 1 3 3 2 2 . . . . 
+        . 2 1 1 1 1 1 1 1 1 3 3 3 3 . . 
+        . 2 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+        . 3 1 1 1 1 1 1 1 3 2 2 3 3 . . 
+        . . 2 1 1 1 1 3 2 2 . . . . . . 
+        . . . 2 2 2 2 . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, dino, -50, 0)
+    animation.runImageAnimation(
+    blast,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . 2 2 2 2 . . . . . . . . . 
+        . . 2 1 1 1 1 2 2 . . . . . . . 
+        . 3 1 1 1 1 1 1 3 3 2 2 . . . . 
+        . 2 1 1 1 1 1 1 1 1 3 3 3 3 . . 
+        . 2 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+        . 3 1 1 1 1 1 1 1 3 2 2 3 3 . . 
+        . . 2 1 1 1 1 3 2 2 . . . . . . 
+        . . . 2 2 2 2 . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 3 3 3 3 3 3 3 3 3 3 3 3 . . 
+        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+        . . 3 3 3 3 3 3 3 3 3 3 3 3 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 3 1 1 . . . . . . . 
+        . . . . . 3 3 . 3 1 . . . . . . 
+        . . 3 2 2 3 . . . 1 . . . . . . 
+        . 3 3 1 2 2 . . . 3 1 . . . . . 
+        . 3 1 1 1 3 2 2 . 3 1 . . . . . 
+        . 2 1 1 1 3 3 3 3 3 1 2 2 2 . . 
+        . 2 1 1 1 1 1 1 1 3 1 1 1 1 . . 
+        . 2 1 1 1 3 3 3 3 3 1 2 2 2 . . 
+        . 3 1 1 1 3 2 2 . 3 1 . . . . . 
+        . 3 3 1 2 2 . . . 3 1 . . . . . 
+        . . 3 2 2 3 . . . 1 . . . . . . 
+        . . . . . 3 3 . 3 1 . . . . . . 
+        . . . . . . 3 1 1 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . 3 . . . 3 3 . . . . . 
+        . . . . 3 3 . . . . 3 3 . . . . 
+        . . . 3 3 . . . . . . 3 . . . . 
+        . . . 3 . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . 3 . . 
+        . . 3 . . . . . . . . . . 3 . . 
+        . . 3 . . . . . . . . . . 3 . . 
+        . . 3 . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . 3 . . . 
+        . . . . 3 . . . . . . 3 3 . . . 
+        . . . . 3 3 . . . . 3 3 . . . . 
+        . . . . . 3 3 . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    200,
+    false
+    )
 }
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
@@ -1579,24 +1904,29 @@ statusbars.onZero(StatusBarKind.dinoHP, function (status) {
     dinoHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(25)
 })
-let projectile: Sprite = null
+let asteroid: Sprite = null
+let blast: Sprite = null
 let dinoHealth: StatusBarSprite = null
 let dino: Sprite = null
+let bolt: Sprite = null
 let shark: Sprite = null
+let bullet: Sprite = null
 let ghost: Sprite = null
-let duck2: Sprite = null
+let projectile: Sprite = null
+let myHP: StatusBarSprite = null
 let coiin: Sprite = null
+let ghst = false
 let ghostHealth: StatusBarSprite = null
 let snowflake = false
 let currentTime = 0
-let duck3: Sprite = null
 let tilemaps: tiles.WorldMap[] = []
 let backgrounds: Image[] = []
 let doubleJmpSpd = 0
 let canDoubleJump = false
 let shield = false
+let dno = false
+let shrk = false
 let sharkHealth: StatusBarSprite = null
-let duck4: Sprite = null
 let level = 0
 let mySprite: Sprite = null
 mySprite = sprites.create(img`
@@ -1617,12 +1947,14 @@ mySprite = sprites.create(img`
     . . c b d d d d d 5 5 5 b b . . 
     . . . c c c c c c c c b b . . . 
     `, SpriteKind.Player)
-mySprite.ay = -40
-controller.moveSprite(mySprite, 100, 100)
+mySprite.ay = 140
+mySprite.vy = 30
+controller.moveSprite(mySprite, 50, 0)
 mySprite.setStayInScreen(true)
 info.setScore(0)
 level = 1
 makeLevels()
+duckSwitch()
 levelSwitch()
 game.onUpdate(function () {
     if (mySprite.isHittingTile(CollisionDirection.Bottom)) {
@@ -1635,7 +1967,7 @@ game.onUpdate(function () {
 game.onUpdateInterval(1000, function () {
     if (level == 2) {
         if (!(shield)) {
-            projectile = sprites.createProjectileFromSide(img`
+            asteroid = sprites.createProjectileFromSide(img`
                 . . . . . . . 2 2 . . . . . . . 
                 . . . . . . . 2 2 . . . . . . . 
                 . . . . . . 2 2 2 2 . . . . . . 
@@ -1654,10 +1986,10 @@ game.onUpdateInterval(1000, function () {
                 . . . 1 1 1 5 5 5 d 1 1 1 1 . . 
                 . . . . . 4 1 1 1 1 1 . . . . . 
                 `, 0, 50)
-            projectile.z = 1
-            projectile.setFlag(SpriteFlag.GhostThroughWalls, true)
-            projectile.setFlag(SpriteFlag.GhostThroughTiles, true)
-            projectile.setPosition(mySprite.x, 0)
+            asteroid.z = 1
+            asteroid.setFlag(SpriteFlag.GhostThroughWalls, true)
+            asteroid.setFlag(SpriteFlag.GhostThroughTiles, true)
+            asteroid.setPosition(mySprite.x, 0)
         }
     }
 })

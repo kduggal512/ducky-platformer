@@ -7,7 +7,10 @@
         "tilemaps": "github:microsoft/pxt-tilemaps#v1.11.0",
         "palette": "*",
         "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2",
-        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1"
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1",
+        "animation": "*",
+        "darts": "*",
+        "arcade-background-scroll": "github:microsoft/arcade-background-scroll#ef27275c570030c09dd1b9e0db2f63a8844b0848"
     },
     "files": [
         "main.blocks",
@@ -15,7 +18,8 @@
         "README.md",
         "assets.json",
         "tilemap.g.jres",
-        "tilemap.g.ts"
+        "tilemap.g.ts",
+        "main.py"
     ],
     "testFiles": [
         "test.ts"
