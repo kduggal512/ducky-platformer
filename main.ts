@@ -1,5 +1,8 @@
 namespace SpriteKind {
     export const coin = SpriteKind.create()
+    export const ghist = SpriteKind.create()
+    export const shork = SpriteKind.create()
+    export const deeno = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const ghostHP = StatusBarKind.create()
@@ -174,7 +177,12 @@ function attemptJump () {
     }
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    blaster()
+    if (level == 4) {
+        blaster()
+    }
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.ghist, function (sprite, otherSprite) {
+    ghostHealth.value += -3
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     info.stopCountdown()
@@ -849,10 +857,10 @@ statusbars.onZero(StatusBarKind.Health, function (status) {
 })
 function blaster () {
     myHP = statusbars.create(20, 4, StatusBarKind.Health)
+    myHP.value = 25
     myHP.attachToSprite(mySprite)
     myHP.setColor(7, 1)
     if (level == 4) {
-        let duck4: Sprite = null
         projectile = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -870,8 +878,8 @@ function blaster () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
-            `, mySprite, 50, 50)
-        projectile.setPosition(duck4.x + 1, mySprite.y)
+            `, mySprite, 100, 0)
+        projectile.setPosition(mySprite.x + 1, mySprite.y)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
@@ -910,7 +918,7 @@ function ghostActivate () {
         ........................
         ........................
         ........................
-        `, SpriteKind.Enemy)
+        `, SpriteKind.ghist)
     animation.runImageAnimation(
     ghost,
     [img`
@@ -1126,6 +1134,9 @@ function startL2 () {
     levelSwitch()
     shield = false
 }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.shork, function (sprite, otherSprite) {
+    sharkHealth.value += -4
+})
 function duckL2 () {
     mySprite.setFlag(SpriteFlag.AutoDestroy, true)
     mySprite = sprites.create(img`
@@ -1280,7 +1291,7 @@ function duckInitialization () {
         . . . c c c c c c c c b b . . . 
         `, SpriteKind.Player)
     mySprite.ay = 140
-    controller.moveSprite(mySprite, 50, 0)
+    controller.moveSprite(mySprite, 100, 100)
     mySprite.setStayInScreen(true)
     animation.runImageAnimation(
     mySprite,
@@ -1392,10 +1403,9 @@ function duckInitialization () {
     )
 }
 function createBosses () {
+    ghostActivate()
     ghst = true
-    if (ghst) {
-        ghostActivate()
-    } else if (shrk) {
+    if (shrk) {
         sharkActivate()
     } else {
         dinoActivate()
@@ -1460,7 +1470,7 @@ function sharkActivate () {
         ....fccc111f2d22ccdcc.....f22f..
         ........ccccfcd22cc........fff..
         .............fffff..............
-        `, SpriteKind.Enemy)
+        `, SpriteKind.shork)
     animation.runImageAnimation(
     shark,
     [img`
@@ -1615,6 +1625,9 @@ function sharkActivate () {
     false
     )
 }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.deeno, function (sprite, otherSprite) {
+    dinoHealth.value += -5
+})
 function dinoActivate () {
     dino = sprites.create(img`
         ........................
@@ -1641,7 +1654,7 @@ function dinoActivate () {
         .......cc222dbbbbbcc....
         .......cbddddbcccc......
         ......cd2222dc..........
-        `, SpriteKind.Enemy)
+        `, SpriteKind.deeno)
     animation.runImageAnimation(
     dino,
     [img`
@@ -1906,8 +1919,8 @@ statusbars.onZero(StatusBarKind.dinoHP, function (status) {
 })
 let asteroid: Sprite = null
 let blast: Sprite = null
-let dinoHealth: StatusBarSprite = null
 let dino: Sprite = null
+let dinoHealth: StatusBarSprite = null
 let bolt: Sprite = null
 let shark: Sprite = null
 let bullet: Sprite = null
@@ -1916,11 +1929,11 @@ let projectile: Sprite = null
 let myHP: StatusBarSprite = null
 let coiin: Sprite = null
 let ghst = false
-let ghostHealth: StatusBarSprite = null
 let snowflake = false
 let currentTime = 0
 let tilemaps: tiles.WorldMap[] = []
 let backgrounds: Image[] = []
+let ghostHealth: StatusBarSprite = null
 let doubleJmpSpd = 0
 let canDoubleJump = false
 let shield = false
@@ -1948,8 +1961,7 @@ mySprite = sprites.create(img`
     . . . c c c c c c c c b b . . . 
     `, SpriteKind.Player)
 mySprite.ay = 140
-mySprite.vy = 30
-controller.moveSprite(mySprite, 50, 0)
+controller.moveSprite(mySprite, 100, 100)
 mySprite.setStayInScreen(true)
 info.setScore(0)
 level = 1
