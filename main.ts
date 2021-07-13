@@ -1441,15 +1441,19 @@ function setScene () {
 }
 function levelSwitch () {
     if (level == 1) {
+        game.splash("Congrats on beating Level" + level + "!")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
     } else if (level == 2) {
+        game.splash("Congrats on beating Level" + level + "!")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 12))
     } else if (level == 3) {
+        game.splash("Congrats on beating Level" + level + "!")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 15))
     } else {
+        game.splash("Congrats on beating Level" + level + "!")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 10))
     }
