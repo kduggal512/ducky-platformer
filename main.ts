@@ -159,6 +159,7 @@ sprites.onOverlap(SpriteKind.blast, SpriteKind.ghist, function (sprite, otherSpr
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile19`, function (sprite, location) {
     remainderTime()
+    gameEnding = true
     info.stopCountdown()
     game.over(true)
 })
@@ -850,7 +851,7 @@ function duckL3 () {
     )
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile18`, function (sprite, location) {
-    currentTime = game.runtime()
+    startTime = game.runtime()
     tiles.setTileAt(location, assets.tile`transparency16`)
     snowflake = true
 })
@@ -1145,7 +1146,6 @@ function ghostActivate () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.coin, function (sprite, otherSprite) {
     otherSprite.destroy(effects.ashes, 500)
     info.changeScoreBy(2)
-    pause(1000)
 })
 sprites.onOverlap(SpriteKind.blast, SpriteKind.shork, function (sprite, otherSprite) {
     sharkHealth.value += -4
@@ -1926,11 +1926,16 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, fu
 statusbars.onZero(StatusBarKind.dinoHP, function (status) {
     dinoHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(25)
+    mySprite.say(info.score())
 })
 function remainderTime () {
-    info.changeScoreBy(Math.round(game.runtime() / 1000 + 5))
+    elapsedLevelTime = (game.runtime() - startTime) / 1000
+    leftoverLevelTime = 45 - elapsedLevelTime
+    info.changeScoreBy(Math.round(leftoverLevelTime / 3))
 }
 let asteroid: Sprite = null
+let leftoverLevelTime = 0
+let elapsedLevelTime = 0
 let blast: Sprite = null
 let dino: Sprite = null
 let bolt: Sprite = null
@@ -1941,7 +1946,6 @@ let dinoHealth: StatusBarSprite = null
 let boom: Sprite = null
 let coiin: Sprite = null
 let snowflake = false
-let currentTime = 0
 let tilemaps: tiles.WorldMap[] = []
 let backgrounds: Image[] = []
 let myHP: StatusBarSprite = null
@@ -1951,6 +1955,8 @@ let canDoubleJump = false
 let shield = false
 let ghostHealth: StatusBarSprite = null
 let sharkHealth: StatusBarSprite = null
+let gameEnding = false
+let startTime = 0
 let level = 0
 let mySprite: Sprite = null
 mySprite = sprites.create(img`
@@ -1979,11 +1985,13 @@ level = 1
 makeLevels()
 duckSwitch()
 levelSwitch()
+startTime = game.runtime()
+gameEnding = false
 game.onUpdate(function () {
     if (mySprite.isHittingTile(CollisionDirection.Bottom)) {
         canDoubleJump = true
     }
-    if (game.runtime() == currentTime + 7500 && level == 3) {
+    if (game.runtime() == startTime + 7500 && level == 3) {
         snowflake = false
     }
 })

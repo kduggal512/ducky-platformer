@@ -10,7 +10,8 @@
         "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1",
         "animation": "*",
         "darts": "*",
-        "arcade-background-scroll": "github:microsoft/arcade-background-scroll#ef27275c570030c09dd1b9e0db2f63a8844b0848"
+        "arcade-background-scroll": "github:microsoft/arcade-background-scroll#ef27275c570030c09dd1b9e0db2f63a8844b0848",
+        "Timers": "github:microsoft/arcade-timers#v1.1.0"
     },
     "files": [
         "main.blocks",
