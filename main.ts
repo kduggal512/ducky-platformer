@@ -3,6 +3,8 @@ namespace SpriteKind {
     export const ghist = SpriteKind.create()
     export const shork = SpriteKind.create()
     export const deeno = SpriteKind.create()
+    export const meteor = SpriteKind.create()
+    export const blast = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const ghostHP = StatusBarKind.create()
@@ -37,7 +39,6 @@ function duckL4 () {
     mySprite.ay = -40
     controller.moveSprite(mySprite, 100, 100)
     mySprite.setStayInScreen(true)
-    // need to animate
     animation.runImageAnimation(
     mySprite,
     [img`
@@ -146,15 +147,19 @@ function duckL4 () {
     500,
     true
     )
+    makeHealthBarL4()
 }
 statusbars.onZero(StatusBarKind.sharkHP, function (status) {
-    info.setLife(3)
     sharkHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(15)
-    shrk = false
-    dno = true
+    dinoActivate()
+})
+sprites.onOverlap(SpriteKind.blast, SpriteKind.ghist, function (sprite, otherSprite) {
+    ghostHealth.value += -3
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile19`, function (sprite, location) {
+    remainderTime()
+    info.stopCountdown()
     game.over(true)
 })
 function levelSetup () {
@@ -176,26 +181,44 @@ function attemptJump () {
         canDoubleJump = false
     }
 }
+function makeHealthBarL2 () {
+    HPL2 = statusbars.create(20, 4, StatusBarKind.Health)
+    HPL2.value = 25
+    HPL2.attachToSprite(mySprite)
+    HPL2.setColor(7, 1)
+}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (level == 4) {
         blaster()
     }
 })
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.ghist, function (sprite, otherSprite) {
-    ghostHealth.value += -3
-})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
+    remainderTime()
     info.stopCountdown()
     startL2()
 })
+function makeHealthBarL4 () {
+    myHP = statusbars.create(20, 4, StatusBarKind.Health)
+    myHP.value = 25
+    myHP.attachToSprite(mySprite)
+    myHP.setColor(7, 1)
+}
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile15`, function (sprite, location) {
+    remainderTime()
     info.stopCountdown()
     startL4()
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     attemptJump()
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.meteor, function (sprite, otherSprite) {
+    if (level == 2) {
+        HPL2.value += -5
+        otherSprite.destroy()
+    }
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile12`, function (sprite, location) {
+    remainderTime()
     info.stopCountdown()
     startL3()
 })
@@ -717,12 +740,9 @@ function duckL3 () {
     mySprite.ay = -40
     controller.moveSprite(mySprite, 100, 100)
     mySprite.setStayInScreen(true)
-    // need to animate
     animation.runImageAnimation(
     mySprite,
     [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
         . . . . . . . . . b 5 5 b . . . 
         . . . . . . b b b b b b . . . . 
         . . . . . b b 5 5 5 5 5 b . . . 
@@ -737,6 +757,8 @@ function duckL3 () {
         . c d d d d d d 5 5 5 5 5 d b . 
         . . c b d d d d d 5 5 5 b b . . 
         . . . c c c c c c c c b b . . . 
+        . . . . f . . . . f . . . . . . 
+        . . . . f f . . . f f . . . . . 
         `,img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . b 5 b . . . 
@@ -836,15 +858,13 @@ info.onCountdownEnd(function () {
     game.over(false, effects.slash)
 })
 statusbars.onZero(StatusBarKind.ghostHP, function (status) {
-    info.setLife(3)
     ghostHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(10)
-    ghst = false
-    shrk = true
+    sharkActivate()
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.chestClosed, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
-    info.changeScoreBy(randint(8, 15))
+    info.changeScoreBy(20)
 })
 function generateCoins () {
     for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
@@ -856,12 +876,8 @@ statusbars.onZero(StatusBarKind.Health, function (status) {
     game.over(false)
 })
 function blaster () {
-    myHP = statusbars.create(20, 4, StatusBarKind.Health)
-    myHP.value = 25
-    myHP.attachToSprite(mySprite)
-    myHP.setColor(7, 1)
     if (level == 4) {
-        projectile = sprites.createProjectileFromSprite(img`
+        boom = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -879,9 +895,13 @@ function blaster () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, mySprite, 100, 0)
-        projectile.setPosition(mySprite.x + 1, mySprite.y)
+        boom.setKind(SpriteKind.blast)
+        boom.setPosition(mySprite.x + 1, mySprite.y)
     }
 }
+sprites.onOverlap(SpriteKind.blast, SpriteKind.deeno, function (sprite, otherSprite) {
+    dinoHealth.value += -5
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
     myHP.value += -4
 })
@@ -1127,6 +1147,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.coin, function (sprite, otherSpr
     info.changeScoreBy(2)
     pause(1000)
 })
+sprites.onOverlap(SpriteKind.blast, SpriteKind.shork, function (sprite, otherSprite) {
+    sharkHealth.value += -4
+})
 function startL2 () {
     level += 1
     pause(100)
@@ -1134,9 +1157,6 @@ function startL2 () {
     levelSwitch()
     shield = false
 }
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.shork, function (sprite, otherSprite) {
-    sharkHealth.value += -4
-})
 function duckL2 () {
     mySprite.setFlag(SpriteFlag.AutoDestroy, true)
     mySprite = sprites.create(img`
@@ -1160,7 +1180,6 @@ function duckL2 () {
     mySprite.ay = -40
     controller.moveSprite(mySprite, 100, 100)
     mySprite.setStayInScreen(true)
-    // need to animate
     animation.runImageAnimation(
     mySprite,
     [img`
@@ -1269,6 +1288,7 @@ function duckL2 () {
     500,
     true
     )
+    makeHealthBarL2()
 }
 function duckInitialization () {
     mySprite.destroy()
@@ -1404,12 +1424,6 @@ function duckInitialization () {
 }
 function createBosses () {
     ghostActivate()
-    ghst = true
-    if (shrk) {
-        sharkActivate()
-    } else {
-        dinoActivate()
-    }
 }
 function startL4 () {
     level += 1
@@ -1434,7 +1448,7 @@ function levelSwitch () {
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 12))
     } else if (level == 3) {
         setScene()
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 15))
     } else {
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 10))
@@ -1625,9 +1639,6 @@ function sharkActivate () {
     false
     )
 }
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.deeno, function (sprite, otherSprite) {
-    dinoHealth.value += -5
-})
 function dinoActivate () {
     dino = sprites.create(img`
         ........................
@@ -1913,32 +1924,32 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, fu
     info.changeScoreBy(4)
 })
 statusbars.onZero(StatusBarKind.dinoHP, function (status) {
-    info.setLife(3)
     dinoHealth.spriteAttachedTo().destroy()
     info.changeScoreBy(25)
 })
+function remainderTime () {
+    info.changeScoreBy(Math.round(game.runtime() / 1000 + 5))
+}
 let asteroid: Sprite = null
 let blast: Sprite = null
 let dino: Sprite = null
-let dinoHealth: StatusBarSprite = null
 let bolt: Sprite = null
 let shark: Sprite = null
 let bullet: Sprite = null
 let ghost: Sprite = null
-let projectile: Sprite = null
-let myHP: StatusBarSprite = null
+let dinoHealth: StatusBarSprite = null
+let boom: Sprite = null
 let coiin: Sprite = null
-let ghst = false
 let snowflake = false
 let currentTime = 0
 let tilemaps: tiles.WorldMap[] = []
 let backgrounds: Image[] = []
-let ghostHealth: StatusBarSprite = null
+let myHP: StatusBarSprite = null
+let HPL2: StatusBarSprite = null
 let doubleJmpSpd = 0
 let canDoubleJump = false
 let shield = false
-let dno = false
-let shrk = false
+let ghostHealth: StatusBarSprite = null
 let sharkHealth: StatusBarSprite = null
 let level = 0
 let mySprite: Sprite = null
@@ -1976,7 +1987,7 @@ game.onUpdate(function () {
         snowflake = false
     }
 })
-game.onUpdateInterval(1000, function () {
+game.onUpdateInterval(2000, function () {
     if (level == 2) {
         if (!(shield)) {
             asteroid = sprites.createProjectileFromSide(img`
@@ -1998,10 +2009,12 @@ game.onUpdateInterval(1000, function () {
                 . . . 1 1 1 5 5 5 d 1 1 1 1 . . 
                 . . . . . 4 1 1 1 1 1 . . . . . 
                 `, 0, 50)
+            asteroid.setKind(SpriteKind.meteor)
+            asteroid.setPosition(mySprite.x, 0)
             asteroid.z = 1
+            asteroid.setFlag(SpriteFlag.AutoDestroy, false)
             asteroid.setFlag(SpriteFlag.GhostThroughWalls, true)
             asteroid.setFlag(SpriteFlag.GhostThroughTiles, true)
-            asteroid.setPosition(mySprite.x, 0)
         }
     }
 })
