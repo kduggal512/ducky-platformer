@@ -14,6 +14,12 @@ namespace StatusBarKind {
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
 })
+function variableInitialization () {
+    gameEnding = false
+    ghostAlive = false
+    sharkAlive = false
+    dinoAlive = false
+}
 function duckL4 () {
     mySprite.setFlag(SpriteFlag.AutoDestroy, true)
     mySprite = sprites.create(img`
@@ -151,6 +157,7 @@ function duckL4 () {
 }
 statusbars.onZero(StatusBarKind.sharkHP, function (status) {
     sharkHealth.spriteAttachedTo().destroy()
+    sharkAlive = false
     info.changeScoreBy(15)
     dinoActivate()
 })
@@ -856,10 +863,11 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile18`, function (sprite, 
     snowflake = true
 })
 info.onCountdownEnd(function () {
-    game.over(false, effects.slash)
+    game.over(false)
 })
 statusbars.onZero(StatusBarKind.ghostHP, function (status) {
     ghostHealth.spriteAttachedTo().destroy()
+    ghostAlive = false
     info.changeScoreBy(10)
     sharkActivate()
 })
@@ -940,6 +948,7 @@ function ghostActivate () {
         ........................
         ........................
         `, SpriteKind.ghist)
+    ghostAlive = true
     animation.runImageAnimation(
     ghost,
     [img`
@@ -1050,98 +1059,100 @@ function ghostActivate () {
     ghostHealth = statusbars.create(20, 4, StatusBarKind.ghostHP)
     ghostHealth.attachToSprite(ghost)
     ghostHealth.value = 5
-    bullet = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . 4 4 . . . . . . . 
-        . . . . . . 4 5 5 4 . . . . . . 
-        . . . . . . 2 5 5 2 . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, ghost, -50, 0)
-    animation.runImageAnimation(
-    bullet,
-    [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . 4 4 . . . . . . . 
-        . . . . . . 4 5 5 4 . . . . . . 
-        . . . . . . 2 5 5 2 . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . 4 . . . . . 
-        . . . . 2 . . . . 4 4 . . . . . 
-        . . . . 2 4 . . 4 5 4 . . . . . 
-        . . . . . 2 4 d 5 5 4 . . . . . 
-        . . . . . 2 5 5 5 5 4 . . . . . 
-        . . . . . . 2 5 5 5 5 4 . . . . 
-        . . . . . . 2 5 4 2 4 4 . . . . 
-        . . . . . . 4 4 . . 2 4 4 . . . 
-        . . . . . 4 4 . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . 3 . . . . . . . . . . . 4 . . 
-        . 3 3 . . . . . . . . . 4 4 . . 
-        . 3 d 3 . . 4 4 . . 4 4 d 4 . . 
-        . . 3 5 3 4 5 5 4 4 d d 4 4 . . 
-        . . 3 d 5 d 1 1 d 5 5 d 4 4 . . 
-        . . 4 5 5 1 1 1 1 5 1 1 5 4 . . 
-        . 4 5 5 5 5 1 1 5 1 1 1 d 4 4 . 
-        . 4 d 5 1 1 5 5 5 1 1 1 5 5 4 . 
-        . 4 4 5 1 1 5 5 5 5 5 d 5 5 4 . 
-        . . 4 3 d 5 5 5 d 5 5 d d d 4 . 
-        . 4 5 5 d 5 5 5 d d d 5 5 4 . . 
-        . 4 5 5 d 3 5 d d 3 d 5 5 4 . . 
-        . 4 4 d d 4 d d d 4 3 d d 4 . . 
-        . . 4 5 4 4 4 4 4 4 4 4 4 . . . 
-        . 4 5 4 . . 4 4 4 . . . 4 4 . . 
-        . 4 4 . . . . . . . . . . 4 4 . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . b b . b b b . . . . . 
-        . . . . b 1 1 b 1 1 1 b . . . . 
-        . . b b 3 1 1 d d 1 d d b b . . 
-        . b 1 1 d d b b b b b 1 1 b . . 
-        . b 1 1 1 b . . . . . b d d b . 
-        . . 3 d d b . . . . . b d 1 1 b 
-        . b 1 d 3 . . . . . . . b 1 1 b 
-        . b 1 1 b . . . . . . b b 1 d b 
-        . b 1 d b . . . . . . b d 3 d b 
-        . b b d d b . . . . b d d d b . 
-        . b d d d d b . b b 3 d d 3 b . 
-        . . b d d 3 3 b d 3 3 b b b . . 
-        . . . b b b d d d d d b . . . . 
-        . . . . . . b b b b b . . . . . 
-        `],
-    500,
-    false
-    )
+    if (ghostAlive) {
+        bullet = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . 4 4 . . . . . . . 
+            . . . . . . 4 5 5 4 . . . . . . 
+            . . . . . . 2 5 5 2 . . . . . . 
+            . . . . . . . 2 2 . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, ghost, -50, 0)
+        animation.runImageAnimation(
+        bullet,
+        [img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . 4 4 . . . . . . . 
+            . . . . . . 4 5 5 4 . . . . . . 
+            . . . . . . 2 5 5 2 . . . . . . 
+            . . . . . . . 2 2 . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `,img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . 4 . . . . . 
+            . . . . 2 . . . . 4 4 . . . . . 
+            . . . . 2 4 . . 4 5 4 . . . . . 
+            . . . . . 2 4 d 5 5 4 . . . . . 
+            . . . . . 2 5 5 5 5 4 . . . . . 
+            . . . . . . 2 5 5 5 5 4 . . . . 
+            . . . . . . 2 5 4 2 4 4 . . . . 
+            . . . . . . 4 4 . . 2 4 4 . . . 
+            . . . . . 4 4 . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `,img`
+            . 3 . . . . . . . . . . . 4 . . 
+            . 3 3 . . . . . . . . . 4 4 . . 
+            . 3 d 3 . . 4 4 . . 4 4 d 4 . . 
+            . . 3 5 3 4 5 5 4 4 d d 4 4 . . 
+            . . 3 d 5 d 1 1 d 5 5 d 4 4 . . 
+            . . 4 5 5 1 1 1 1 5 1 1 5 4 . . 
+            . 4 5 5 5 5 1 1 5 1 1 1 d 4 4 . 
+            . 4 d 5 1 1 5 5 5 1 1 1 5 5 4 . 
+            . 4 4 5 1 1 5 5 5 5 5 d 5 5 4 . 
+            . . 4 3 d 5 5 5 d 5 5 d d d 4 . 
+            . 4 5 5 d 5 5 5 d d d 5 5 4 . . 
+            . 4 5 5 d 3 5 d d 3 d 5 5 4 . . 
+            . 4 4 d d 4 d d d 4 3 d d 4 . . 
+            . . 4 5 4 4 4 4 4 4 4 4 4 . . . 
+            . 4 5 4 . . 4 4 4 . . . 4 4 . . 
+            . 4 4 . . . . . . . . . . 4 4 . 
+            `,img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . b b . b b b . . . . . 
+            . . . . b 1 1 b 1 1 1 b . . . . 
+            . . b b 3 1 1 d d 1 d d b b . . 
+            . b 1 1 d d b b b b b 1 1 b . . 
+            . b 1 1 1 b . . . . . b d d b . 
+            . . 3 d d b . . . . . b d 1 1 b 
+            . b 1 d 3 . . . . . . . b 1 1 b 
+            . b 1 1 b . . . . . . b b 1 d b 
+            . b 1 d b . . . . . . b d 3 d b 
+            . b b d d b . . . . b d d d b . 
+            . b d d d d b . b b 3 d d 3 b . 
+            . . b d d 3 3 b d 3 3 b b b . . 
+            . . . b b b d d d d d b . . . . 
+            . . . . . . b b b b b . . . . . 
+            `],
+        500,
+        false
+        )
+    }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.coin, function (sprite, otherSprite) {
     otherSprite.destroy(effects.ashes, 500)
@@ -1427,7 +1438,6 @@ function createBosses () {
 }
 function startL4 () {
     level += 1
-    pause(100)
     duckSwitch()
     levelSwitch()
     createBosses()
@@ -1441,23 +1451,29 @@ function setScene () {
 }
 function levelSwitch () {
     if (level == 1) {
-        game.splash("Congrats on beating Level" + level + "!")
+        game.splash("Level" + " " + level + "")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 14))
+        levelSetup()
     } else if (level == 2) {
-        game.splash("Congrats on beating Level" + level + "!")
+        game.splash("Congrats on beating Level" + " " + (level - 1) + "!")
+        game.splash("Level" + " " + level + "")
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 12))
+        levelSetup()
     } else if (level == 3) {
-        game.splash("Congrats on beating Level" + level + "!")
+        game.splash("Congrats on beating Level" + " " + (level - 1) + "!")
+        game.splash("Level" + " " + level)
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 15))
+        levelSetup()
     } else {
-        game.splash("Congrats on beating Level" + level + "!")
+        game.splash("Congrats on beating Level" + " " + (level - 1) + "!")
+        game.splash("Level" + " " + level)
         setScene()
         tiles.placeOnTile(mySprite, tiles.getTileLocation(0, 10))
+        levelSetup()
     }
-    levelSetup()
 }
 function duckSwitch () {
     if (level == 1) {
@@ -1489,6 +1505,7 @@ function sharkActivate () {
         ........ccccfcd22cc........fff..
         .............fffff..............
         `, SpriteKind.shork)
+    sharkAlive = true
     animation.runImageAnimation(
     shark,
     [img`
@@ -1567,81 +1584,6 @@ function sharkActivate () {
     sharkHealth = statusbars.create(20, 4, StatusBarKind.sharkHP)
     sharkHealth.attachToSprite(shark)
     sharkHealth.value = 10
-    bolt = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . 3 1 1 3 . . . . . . 
-        . . . . . 2 1 1 1 1 2 . . . . . 
-        . . . . . 2 1 1 1 1 2 . . . . . 
-        . . . . . . 3 1 1 3 . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, shark, -50, 0)
-    animation.runImageAnimation(
-    bolt,
-    [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . 3 1 1 3 . . . . . . 
-        . . . . . 2 1 1 1 1 2 . . . . . 
-        . . . . . 2 1 1 1 1 2 . . . . . 
-        . . . . . . 3 1 1 3 . . . . . . 
-        . . . . . . . 2 2 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . 3 3 . . . . . . . . 
-        . . . . . . 3 1 3 . . . . . . . 
-        . . 3 3 . . 3 1 3 . . 3 3 . . . 
-        . . 3 1 3 . 3 1 3 2 3 1 3 . . . 
-        . . . 3 1 3 3 1 3 2 1 3 . . . . 
-        3 3 3 3 2 1 3 1 1 1 3 . . . . . 
-        3 1 1 1 1 1 1 1 1 2 3 3 3 3 3 3 
-        . 3 3 3 2 3 1 1 1 1 1 1 1 1 1 3 
-        . . . . . 2 1 1 1 3 3 2 3 3 3 . 
-        . . . . 3 1 3 1 3 1 2 . . . . . 
-        . . . 3 1 3 2 1 3 3 1 3 . . . . 
-        . . 3 1 3 . 2 1 3 . 3 1 3 . . . 
-        . . 3 3 . . 3 1 3 . . 3 3 . . . 
-        . . . . . . 3 1 3 . . . . . . . 
-        . . . . . . 3 1 3 . . . . . . . 
-        . . . . . . 3 3 . . . . . . . . 
-        `,img`
-        . . 3 3 . . . 3 3 . . . . . . . 
-        . 3 1 1 2 . . 3 1 3 . . 3 3 3 . 
-        . 3 1 1 2 . . 3 1 3 . 3 1 1 3 . 
-        . . 3 2 2 . . 2 1 2 . 2 1 1 3 . 
-        . 3 3 . . . . . 2 2 . 2 2 2 . . 
-        3 1 1 2 2 . . . . . . . 3 3 . . 
-        3 1 1 1 2 . . . . . . 2 1 1 3 3 
-        3 1 1 2 . . . . . . 3 1 1 1 1 3 
-        . 3 2 2 . . . . . . . 2 1 1 3 . 
-        . . . . . . . 2 . . . . 3 3 . . 
-        . . 2 2 2 . 2 1 2 . . 2 2 2 . . 
-        . 3 1 1 2 2 3 1 1 2 . 2 1 1 3 3 
-        3 1 1 1 2 2 1 1 1 2 . 2 1 1 1 3 
-        3 1 1 3 . . 3 1 3 . . . 3 1 1 3 
-        3 3 3 . . . . 3 3 . . . . 3 3 . 
-        . . . . . . . . . . . . . . . . 
-        `],
-    500,
-    false
-    )
 }
 function dinoActivate () {
     dino = sprites.create(img`
@@ -1670,6 +1612,7 @@ function dinoActivate () {
         .......cbddddbcccc......
         ......cd2222dc..........
         `, SpriteKind.deeno)
+    dinoAlive = true
     animation.runImageAnimation(
     dino,
     [img`
@@ -1830,98 +1773,6 @@ function dinoActivate () {
     dinoHealth = statusbars.create(20, 4, StatusBarKind.dinoHP)
     dinoHealth.attachToSprite(dino)
     dinoHealth.value = 20
-    blast = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . 2 2 2 2 . . . . . . . . . 
-        . . 2 1 1 1 1 2 2 . . . . . . . 
-        . 3 1 1 1 1 1 1 3 3 2 2 . . . . 
-        . 2 1 1 1 1 1 1 1 1 3 3 3 3 . . 
-        . 2 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-        . 3 1 1 1 1 1 1 1 3 2 2 3 3 . . 
-        . . 2 1 1 1 1 3 2 2 . . . . . . 
-        . . . 2 2 2 2 . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, dino, -50, 0)
-    animation.runImageAnimation(
-    blast,
-    [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . 2 2 2 2 . . . . . . . . . 
-        . . 2 1 1 1 1 2 2 . . . . . . . 
-        . 3 1 1 1 1 1 1 3 3 2 2 . . . . 
-        . 2 1 1 1 1 1 1 1 1 3 3 3 3 . . 
-        . 2 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-        . 3 1 1 1 1 1 1 1 3 2 2 3 3 . . 
-        . . 2 1 1 1 1 3 2 2 . . . . . . 
-        . . . 2 2 2 2 . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
-        . . 3 3 3 3 3 3 3 3 3 3 3 3 . . 
-        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-        . . 3 3 3 3 3 3 3 3 3 3 3 3 . . 
-        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . 3 1 1 . . . . . . . 
-        . . . . . 3 3 . 3 1 . . . . . . 
-        . . 3 2 2 3 . . . 1 . . . . . . 
-        . 3 3 1 2 2 . . . 3 1 . . . . . 
-        . 3 1 1 1 3 2 2 . 3 1 . . . . . 
-        . 2 1 1 1 3 3 3 3 3 1 2 2 2 . . 
-        . 2 1 1 1 1 1 1 1 3 1 1 1 1 . . 
-        . 2 1 1 1 3 3 3 3 3 1 2 2 2 . . 
-        . 3 1 1 1 3 2 2 . 3 1 . . . . . 
-        . 3 3 1 2 2 . . . 3 1 . . . . . 
-        . . 3 2 2 3 . . . 1 . . . . . . 
-        . . . . . 3 3 . 3 1 . . . . . . 
-        . . . . . . 3 1 1 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . 3 . . . 3 3 . . . . . 
-        . . . . 3 3 . . . . 3 3 . . . . 
-        . . . 3 3 . . . . . . 3 . . . . 
-        . . . 3 . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . 3 . . 
-        . . 3 . . . . . . . . . . 3 . . 
-        . . 3 . . . . . . . . . . 3 . . 
-        . . 3 . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . 3 . . . 
-        . . . . 3 . . . . . . 3 3 . . . 
-        . . . . 3 3 . . . . 3 3 . . . . 
-        . . . . . 3 3 . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `],
-    200,
-    false
-    )
 }
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
@@ -1929,8 +1780,8 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, fu
 })
 statusbars.onZero(StatusBarKind.dinoHP, function (status) {
     dinoHealth.spriteAttachedTo().destroy()
+    dinoAlive = false
     info.changeScoreBy(25)
-    mySprite.say(info.score())
 })
 function remainderTime () {
     elapsedLevelTime = (game.runtime() - startTime) / 1000
@@ -1940,9 +1791,7 @@ function remainderTime () {
 let asteroid: Sprite = null
 let leftoverLevelTime = 0
 let elapsedLevelTime = 0
-let blast: Sprite = null
 let dino: Sprite = null
-let bolt: Sprite = null
 let shark: Sprite = null
 let bullet: Sprite = null
 let ghost: Sprite = null
@@ -1959,6 +1808,9 @@ let canDoubleJump = false
 let shield = false
 let ghostHealth: StatusBarSprite = null
 let sharkHealth: StatusBarSprite = null
+let dinoAlive = false
+let sharkAlive = false
+let ghostAlive = false
 let gameEnding = false
 let startTime = 0
 let level = 0
@@ -1990,7 +1842,7 @@ makeLevels()
 duckSwitch()
 levelSwitch()
 startTime = game.runtime()
-gameEnding = false
+variableInitialization()
 game.onUpdate(function () {
     if (mySprite.isHittingTile(CollisionDirection.Bottom)) {
         canDoubleJump = true
