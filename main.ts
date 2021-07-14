@@ -1810,7 +1810,7 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, ghost, -50, 0)
+                `, ghost, -30, 0)
             animation.runImageAnimation(
             bullet,
             [img`
@@ -1885,7 +1885,8 @@ game.onUpdateInterval(2000, function () {
             500,
             false
             )
-        } else if (sharkAlive) {
+        }
+        if (sharkAlive) {
             bolt = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -1903,7 +1904,7 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, shark, -50, 0)
+                `, shark, -30, 0)
             animation.runImageAnimation(
             bolt,
             [img`
@@ -1961,7 +1962,8 @@ game.onUpdateInterval(2000, function () {
             500,
             false
             )
-        } else {
+        }
+        if (dinoAlive) {
             blast2 = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -1979,7 +1981,7 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, dino, -50, 0)
+                `, dino, -30, 0)
             animation.runImageAnimation(
             blast2,
             [img`
